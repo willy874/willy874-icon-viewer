@@ -1,7 +1,20 @@
-type JsonObject = { [key: string]: JsonType }
-type JsonType = null | JsonObject | number | string | boolean;
+import IBody from "./body";
 
-export default class IRequest implements Request {
+function createRequestEntity(url: RequestInfo | IRequest, args?: RequestInit) {
+  if (url instanceof Request) return url
+  if (url instanceof IRequest) return url
+  if (typeof url === "string") return { ...args, url }
+  return args || {}
+}
+
+function getUrl(req: RequestInfo | IRequest) {
+  if (req instanceof Request) return req.url
+  if (req instanceof IRequest) return req.url
+  return req
+}
+
+
+export default class IRequest extends IBody implements Request {
   readonly cache: RequestCache;
   readonly credentials: RequestCredentials;
   readonly destination: RequestDestination;
@@ -15,12 +28,11 @@ export default class IRequest implements Request {
   readonly referrerPolicy: ReferrerPolicy;
   readonly signal: AbortSignal;
   readonly url: string;
-  readonly bodyUsed: boolean;
-  readonly body: ReadableStream<Uint8Array> | null;
 
-  constructor(url: string | IRequest, args?: RequestInit) {
-    const entity = typeof url === 'string' ? args || {} : url
-    this.url = url instanceof IRequest ? url.url : url
+  constructor(url: RequestInfo | IRequest, args?: RequestInit) {
+    const entity = createRequestEntity(url, args);
+    super(entity.body);
+    this.url = getUrl(url)
     this.cache = entity.cache || 'default'
     this.credentials = entity.credentials || 'same-origin'
     this.destination = ''
@@ -33,51 +45,10 @@ export default class IRequest implements Request {
     this.referrer = entity.referrer || 'about:client'
     this.referrerPolicy = entity.referrerPolicy || ''
     this.signal = entity.signal || new AbortSignal()
-    this.body = entity.body ? new ReadableStream() : null
-    this.bodyUsed = Boolean(this.body)
   }
 
   clone(): IRequest {
     return new IRequest(this)
   }
-  async arrayBuffer(): Promise<ArrayBuffer> {
-    if (this.body) {
-      const reader = await this.body.getReader().read()
-      if (reader.value) {
-        return reader.value
-      }
-    }
-    return new ArrayBuffer(0)
-  }
-  async blob(): Promise<Blob> {
-    if (this.body) {
-      const reader = await this.body.getReader().read()
-      if (reader.value) {
-        return new Blob([reader.value])
-      }
-    }
-    return new Blob()
-  }
-  async formData(): Promise<FormData> {
-    return new FormData()
-  }
-  async json(): Promise<JsonType> {
-    if (this.body) {
-      const reader = await this.body.getReader().read()
-      if (reader.value) {
-        try {
-          return JSON.parse(new TextDecoder().decode(reader.value))
-        } catch (error) {
-          // 
-        }
-      }
-    }
-    return null
-  }
-  async text(): Promise<string> {
-    if (this.body) {
-      return this.body.toString()
-    }
-    return ''
-  }
+
 }
