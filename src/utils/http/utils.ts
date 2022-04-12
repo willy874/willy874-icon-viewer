@@ -1,35 +1,21 @@
-import type { RequestConfig, HttpResponse, IHttpError, HttpRequest } from './types'
-import IRequest from './request'
+import type { HttpResponse, IHttpError, HttpRequest } from './types'
 
-export class HttpError<T = unknown, C = RequestConfig, Req = HttpRequest, Res = HttpResponse<T, C>> extends Error {
+export class HttpError<T = unknown, C = Record<string, any>, Req = HttpRequest, Res = HttpResponse<T>> extends Error {
   data?: T;
   status?: number;
   code?: string;
   config?: C;
   request?: Req;
   response?: Res;
-  isAxiosError = true;
   constructor(args: IHttpError<T, C, Req, Res>) {
-    super(args.message);
-    if (args.config) this.config = args.config;
-    if (args.request) this.request = args.request;
-    if (args.response) this.response = args.response;
-    if (args.code) this.code = args.code;
-    if (args.status) this.status = args.status;
-    if (args.data) this.data = args.data;
-  }
-
-  toJSON() {
-    return {
-      // Native
-      message: this.message,
-      name: this.name,
-      stack: this.stack,
-      // Axios
-      config: this.config,
-      code: this.code,
-      status: this.status
-    }
+    const entity = args || {}
+    super(entity.message || 'Http Error');
+    if (entity.config) this.config = entity.config;
+    if (entity.request) this.request = entity.request;
+    if (entity.response) this.response = entity.response;
+    if (entity.code) this.code = entity.code;
+    if (entity.status) this.status = entity.status;
+    if (entity.data) this.data = entity.data;
   }
 }
 
@@ -37,11 +23,9 @@ export function createHttpError<T>(error: unknown): HttpError<T> {
   if (error instanceof Error) {
     return new HttpError<T>(error)
   }
+  const info = error as object
   return new HttpError({
     message: 'Error',
+    ...info
   })
-}
-
-export function createRequest(input: RequestInfo, init?: RequestInit): Request {
-  return new Request(input, init)
 }

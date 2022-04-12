@@ -1,13 +1,18 @@
-import { IterablePrototype } from '../common';
+import { isHeaders } from '../common';
 
-export default class IHeaders extends IterablePrototype {
+
+export default class IHeaders extends Headers {
   constructor(args?: HeadersInit | IHeaders) {
-    super();
+    super(args);
   }
 
   static resolve(headers: HeadersInit | IHeaders | Record<string, any>): Record<string, string> {
     let result: Record<string, string> = {}
-    if (headers instanceof Headers || headers instanceof IHeaders) {
+    if (isHeaders(headers)) {
+      headers.forEach((key, value) => {
+        result[key] = value
+      })
+    } else if (headers instanceof IHeaders) {
       headers.forEach((key, value) => {
         result[key] = value
       })

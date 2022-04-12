@@ -1,20 +1,15 @@
 
 import IRequest from './request'
-import type { ResponseType } from 'axios'
+import IHeaders from './header'
+import IResponse from './response';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 
-export type HttpRequest = IRequest | Request | XMLHttpRequest
+export type HttpRequest = IRequest | XMLHttpRequest
 
-export interface HttpResponse<T = unknown, C = RequestConfig> {
-  status: number;
-  statusText: string;
-  data?: T;
-  headers: Record<string, string>;
-  config?: C,
-  request?: HttpRequest;
-  response?: Response;
+export interface HttpResponse<T = unknown> extends AxiosResponse<T, T> {
 }
 
-export interface IHttpError<T = unknown, C = RequestConfig, Req = HttpRequest, Res = HttpResponse<T, C>> {
+export interface IHttpError<T = unknown, C = Record<string, any>, Req = HttpRequest, Res = HttpResponse<T>> {
   message: string;
   data?: T;
   status?: number;
@@ -53,50 +48,14 @@ export interface TransitionalOptions {
   clarifyTimeoutError?: boolean;
 }
 
-export interface RequestConfig<D = any> {
-  // common
+export interface AxiosRequestOption<D = any> extends AxiosRequestConfig<D> {
+}
+export interface FetchRequestOption extends RequestInit {
   url?: string;
-  method?: Method;
-  signal?: AbortSignal;
-  // Axios
-  baseURL?: string;
-  transformRequest?: Array<(req: IRequest) => IRequest>;
-  transformResponse?: Array<(res: HttpResponse) => HttpResponse>;
-  headers?: HeadersInit;
-  params?: any;
-  data?: D;
-  timeout?: number;
-  timeoutErrorMessage?: string;
-  withCredentials?: boolean;
-  auth?: BasicCredentials;
-  responseType?: ResponseType;
-  responseEncoding?: string;
-  xsrfCookieName?: string;
-  xsrfHeaderName?: string;
-  maxContentLength?: number;
-  maxBodyLength?: number;
-  maxRedirects?: number;
-  socketPath?: string | null;
-  httpAgent?: any;
-  httpsAgent?: any;
-  proxy?: ProxyConfig | false;
-  cancelToken?: CancelToken;
-  decompress?: boolean;
-  transitional?: TransitionalOptions;
-  insecureHTTPParser?: boolean;
-  paramsSerializer?: (params: any) => string;
-  adapter?: (config: any) => Promise<any>;
-  onUploadProgress?: (progressEvent: any) => void;
-  onDownloadProgress?: (progressEvent: any) => void;
-  validateStatus?: ((status: number) => boolean) | null;
-  // Request
-  cache?: RequestCache;
-  credentials?: RequestCredentials;
-  destination?: RequestDestination;
-  integrity?: string;
-  keepalive?: boolean;
-  mode?: RequestMode;
-  redirect?: RequestRedirect;
-  referrer?: string;
-  referrerPolicy?: ReferrerPolicy;
+}
+
+export interface IHeadersInit {
+  headers?: string[][] | Record<string, string> | Headers | IHeaders;
+  status?: number;
+  statusText?: string;
 }
