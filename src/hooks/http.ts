@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { HttpError, createHttpError } from "@/utils"
 
-export function useFetch(input: RequestInfo, payload: RequestInit) {
+export function useFetch<T, E = null>(input: RequestInfo, payload?: RequestInit) {
   const [request, reFetch] = useState(payload);
-  const [data, setData] = useState(null);
-  const [error, setError] = useState<HttpError | null>();
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<HttpError<E> | null>();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(true);
