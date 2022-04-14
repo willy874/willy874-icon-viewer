@@ -1,4 +1,4 @@
-import { isHeaders } from '../common';
+import { isHeaders } from '../condition';
 
 
 export default class IHeaders extends Headers {

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { HttpError, createHttpError } from "@/utils"
+import { HttpError, createHttpError, http } from "@/utils"
+import { AxiosRequestConfig } from 'axios'
 
-export function useFetch<T, E = null>(input: RequestInfo, payload?: RequestInit) {
+export function useFetch<T, E = null>(input: string, payload?: AxiosRequestConfig) {
   const [request, reFetch] = useState(payload);
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<HttpError<E> | null>();
@@ -11,13 +12,7 @@ export function useFetch<T, E = null>(input: RequestInfo, payload?: RequestInit)
     setData(null);
     setError(null);
     try {
-      fetch(input, request)
-        .then((res) => {
-          if (res.ok) {
-            return res.json()
-          }
-          throw res
-        })
+      http.get<T>(input, request)
         .then((res) => {
           setData(res);
           setLoading(false);

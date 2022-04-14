@@ -2,19 +2,16 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { useEffect } from "react";
-import axios from "axios";
+import { useFetch } from "@/hooks";
 
 const Home: NextPage = () => {
-  useEffect(() => {
-    axios
-      .get("/api/read-file", {
-        params: new URLSearchParams({ url: "/src/assets" }),
-      })
-      .then((response) => {
-        console.log(response.data.data);
-      });
-  }, []);
+  const file = useFetch("/api/fs/file", {
+    params: new URLSearchParams({ url: "/src/utils/index.ts" }),
+  });
+  const fsTree = useFetch("/api/fs/tree", {
+    params: new URLSearchParams({ url: "/src/assets" }),
+  });
+  console.log(file, fsTree);
   return (
     <div className={styles.container}>
       <Head>

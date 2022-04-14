@@ -1,6 +1,6 @@
 export * from './http'
-export * from './http'
 export * from './common'
 export * from './condition'
 export * from './helper'
+export * from './transform'
 export * from './types'

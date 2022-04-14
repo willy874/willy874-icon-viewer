@@ -1,4 +1,4 @@
-import { isRequest } from '../common'
+import { isRequest } from '../condition'
 
 function createRequestEntity(input: RequestInfo | IRequest, init?: RequestInit): [RequestInfo, RequestInit?] {
   if (input instanceof isRequest) {

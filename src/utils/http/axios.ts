@@ -42,7 +42,7 @@ const requestHandler = function <D>(instance: AxiosInstance, config: AxiosReques
     }
     instance.interceptors.request.use(requestSuccessHandler(options), requestErrorHandler(options))
     instance.interceptors.response.use(responseSuccessHandler(options), responseErrorHandler(options))
-    instance.request(config)
+    instance.request(config).then(resolve).catch(reject)
   })
 }
 

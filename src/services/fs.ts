@@ -5,10 +5,10 @@ import fs from 'fs'
 export type ReadFileCallback = (url: string, fileData: FileModel | DirectoryModel) => any
 
 export const readDirectory = async function (dir: string[], filePath: string, callback?: ReadFileCallback): Promise<Array<FileModel | DirectoryModel>> {
-  return await Promise.all(dir.map(file => readFile(path.join(filePath, file), callback)))
+  return await Promise.all(dir.map(file => readFileTree(path.join(filePath, file), callback)))
 }
 
-export const readFile = async function (url: string, callback?: ReadFileCallback): Promise<FileModel | DirectoryModel> {
+export const readFileTree = async function (url: string, callback?: ReadFileCallback): Promise<FileModel | DirectoryModel> {
   const ParsedPath = path.parse(url)
   const stat = await fs.promises.stat(url)
   if (stat.isFile()) {
